@@ -11,6 +11,11 @@ Client side temporary storage to boost performance.
     - [Slide](http://uupaa.github.io/Slide/slide/WebModule/index.html)
     - [Development](https://github.com/uupaa/WebModule/wiki/Development)
 
+## Support browsers
+
+- Safari, Mobile Safari (iOS 8+)
+- Chrome, Chrome for Android
+
 ## How to use
 
 ### Browser
@@ -18,12 +23,18 @@ Client side temporary storage to boost performance.
 ```js
 <script src="lib/WMCache.js"></script>
 <script>
-var cache = new WMCache({}, function(cache) {
-                cache.get(url, function(ur, data, mime, size) {
-                });
-            }, function(err) {
+var allow = ["**/*.png", "**/*.jpg", "**/*.m4a"];
+var cache = new WMCache({ allow: allow }, cacheReady, function(err) {
                 console.log(err.message);
             });
+
+function cacheReady(cache) {
+    cache.getBlobURL(url, function(url, blobURL, mime, size) {
+        var img = new Image();
+        img.src = blobURL;
+        document.body.appendChild(img);
+    });
+}
 </script>
 ```
 
