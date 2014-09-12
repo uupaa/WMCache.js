@@ -1,0 +1,66 @@
+{
+  "name":           "uupaa.wmcache.js",
+  "version":        "0.0.1",
+  "description":    "The temporary storage of web assets to boost performance.",
+  "url":            "https://github.com/uupaa/WMCache.js",
+  "keywords":       ["temporary", "storage", "client", "cache", "FileSystem", "IndexedDB", "WebModule", "uupaa", "Unstable"],
+  "repository": {
+    "type":         "git",
+    "url":          "https://github.com/uupaa/WMCache.js.git"
+  },
+  "scripts": {
+    "init":         "npm update; npm run build; npm run test-page",
+    "watch":        "node node_modules/uupaa.watch.js --verbose --action build",
+    "build":        "node node_modules/uupaa.minify.js --verbose --strict --keep --pretty",
+    "build-simple": "node node_modules/uupaa.minify.js --verbose --strict --keep --pretty --nowrap --simple",
+    "build-release":"node node_modules/uupaa.minify.js --verbose --strict --module",
+    "test":         "npm run test-node; npm run server; npm run test-browser",
+    "test-page":    "node node_modules/uupaa.test.js/bin/TestPage.js --verbose",
+    "test-debug":   "NODE_ENV=production NODE_PATH=lib node --debug-brk --harmony test/index.node.js",
+    "test-node":    "NODE_ENV=production NODE_PATH=lib node --harmony test/index.node.js",
+    "test-browser": "open http://localhost:8585/test/index.html",
+    "test-sim":     "node node_modules/uupaa.iphonesimulator.js --port 8585 --xcache --open test/index.html",
+    "server":       "http-server -c-1 -p 8585 &",
+    "stop":         "killall -- node /usr/local/bin/http-server -p 8585 ; exit 0",
+    "hint":         "jshint lib/*.js",
+    "lint":         "node node_modules/uupaa.plato.js; open lint/plato/index.html"
+  },
+  "x-build": {
+    "source":       ["lib/WMCacheControl.js",
+                     "lib/WMCacheProfile.js",
+                     "lib/WMBlackholeStorage.js",
+                     "lib/WMIndexedDBStorage.js",
+                     "lib/WMFileSystemStorage.js",
+                     "lib/WMCache.js"],
+    "output":       "release/WMCache.min.js",
+    "target":       ["browser", "worker"],
+    "label":        ["@dev", "@WMCacheProfile"],
+    "module": {
+      "develop":    ["uupaa.valid.js"],
+      "release":    ["uupaa.wmurl.js", "uupaa.task.js"]
+    }
+  },
+  "dependencies": {
+    "uupaa.wmurl.js":   "",
+    "uupaa.task.js":    ""
+  },
+  "devDependencies": {
+    "uupaa.nodemodule.js": "",
+    "uupaa.reflection.js": "",
+    "uupaa.iphonesimulator.js": "",
+    "uupaa.console.js": "",
+    "uupaa.valid.js":   "",
+    "uupaa.help.js":    "",
+    "uupaa.task.js":    "",
+    "uupaa.test.js":    "",
+    "uupaa.watch.js":   "",
+    "uupaa.plato.js":   "",
+    "uupaa.minify.js":  "",
+    "uupaa.wmcachetest.js": ""
+  },
+  "lib":            "./lib/",
+  "main":           "./index.js",
+  "author":         "uupaa <uupaa.js@gmail.com>",
+  "license":        "MIT",
+  "contributors":   []
+}

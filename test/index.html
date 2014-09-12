@@ -1,0 +1,47 @@
+<!DOCTYPE html><html><head><title>test</title>
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<meta charset="utf-8"></head><body>
+
+<script id="worker" type="javascript/worker">
+onmessage = function(event) {
+    self.MESSAGE = event.data;
+
+    importScripts(MESSAGE.BASE_DIR + "../node_modules/uupaa.reflection.js/lib/Reflection.js");
+    importScripts(MESSAGE.BASE_DIR + "../node_modules/uupaa.console.js/lib/Console.js");
+    importScripts(MESSAGE.BASE_DIR + "../node_modules/uupaa.help.js/lib/Help.js");
+    importScripts(MESSAGE.BASE_DIR + "../node_modules/uupaa.valid.js/lib/Valid.js");
+    importScripts(MESSAGE.BASE_DIR + "../node_modules/uupaa.task.js/lib/Task.js");
+    importScripts(MESSAGE.BASE_DIR + "../node_modules/uupaa.test.js/lib/Test.js");
+    importScripts(MESSAGE.BASE_DIR + "../node_modules/uupaa.wmcachetest.js/assets/audio.js");
+    importScripts(MESSAGE.BASE_DIR + "../node_modules/uupaa.wmurl.js/lib/WMURL.js");
+    importScripts(MESSAGE.BASE_DIR + "../lib/WMCacheControl.js");
+    importScripts(MESSAGE.BASE_DIR + "../lib/WMCacheProfile.js");
+    importScripts(MESSAGE.BASE_DIR + "../lib/WMBlackholeStorage.js");
+    importScripts(MESSAGE.BASE_DIR + "../lib/WMIndexedDBStorage.js");
+    importScripts(MESSAGE.BASE_DIR + "../lib/WMFileSystemStorage.js");
+    importScripts(MESSAGE.BASE_DIR + "../lib/WMCache.js");
+    importScripts(MESSAGE.BASE_DIR + "../release/WMCache.min.js");
+    importScripts(MESSAGE.BASE_DIR + "./test.js?_=1410511763615");
+
+    self.postMessage({ error: self.errorMessage || "" });
+};
+</script>
+
+<script src="../node_modules/uupaa.reflection.js/lib/Reflection.js"></script>
+<script src="../node_modules/uupaa.console.js/lib/Console.js"></script>
+<script src="../node_modules/uupaa.help.js/lib/Help.js"></script>
+<script src="../node_modules/uupaa.valid.js/lib/Valid.js"></script>
+<script src="../node_modules/uupaa.task.js/lib/Task.js"></script>
+<script src="../node_modules/uupaa.test.js/lib/Test.js"></script>
+<script src="../node_modules/uupaa.wmcachetest.js/assets/audio.js"></script>
+<script src="../node_modules/uupaa.wmurl.js/lib/WMURL.js"></script>
+<script src="../lib/WMCacheControl.js"></script>
+<script src="../lib/WMCacheProfile.js"></script>
+<script src="../lib/WMBlackholeStorage.js"></script>
+<script src="../lib/WMIndexedDBStorage.js"></script>
+<script src="../lib/WMFileSystemStorage.js"></script>
+<script src="../lib/WMCache.js"></script>
+<script src="../release/WMCache.min.js"></script>
+<script src="./test.js?=_1410511763615"></script>
+
+</body></html>
