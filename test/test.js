@@ -21,7 +21,7 @@ var test = new Test("WMCache", {
         testWMCache_setup,
 //      testWMCache_clear,
         testWMCache_reget,
-        testWMCache_store,
+//      testWMCache_store,
         testWMCache_get,
         testWMCache_getArrayBuffer,
     ]);
@@ -39,7 +39,8 @@ function cacheError(err) {
 }
 
 function testWMCache_setup(test, pass, miss) {
-    global.cache = new WMCache({}, function() { // export global.cache
+    new WMCache({}, function(cache) { // export global.cache
+        global.cache = cache;
         test.done(pass());
     }, cacheError);
     document.body.innerHTML += '<p><input type="button" value="cache.clear()" onclick="cache.clear()"></input></p>';
