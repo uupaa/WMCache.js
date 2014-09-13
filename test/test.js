@@ -21,6 +21,7 @@ var test = new Test("WMCache", {
         testWMCache_setup,
 //      testWMCache_clear,
         testWMCache_reget,
+        testWMCache_store,
         testWMCache_get,
         testWMCache_getArrayBuffer,
     ]);
@@ -70,7 +71,7 @@ function testWMCache_reget(test, pass, miss) {
     // [3] check cache
     // [4] fetch cache
 
-  cache.drop(url, function() { // [1]
+    cache.drop(url, function() { // [1]
         cache.get(url, function(url, data, mime, size, cached) { // [2]
             if (cached === true) {
                 test.done(miss());
@@ -88,7 +89,28 @@ function testWMCache_reget(test, pass, miss) {
                 }
             }
         }, { reget: true, wait: true });
-  });
+    });
+}
+
+function testWMCache_store(test, pass, miss) {
+    var cache = global.cache;
+    var dataSource = [0,1,2,3,4,5,6,7];
+    var data = new Uint8Array(dataSource);
+
+    cache.store("a.png", data.buffer, "", data.buffer.byteLength, function() {
+        cache.getArrayBuffer("a.png", function(url, data, mime, size, cached) {
+            var buffer = new Uint8Array(data);
+
+            if (cached && dataSource.length === size) {
+                if ([].slice.call(buffer).join() === dataSource.join()) {
+                    test.done(pass());
+                    cache.drop("a.png");
+                    return;
+                }
+            }
+            test.done(miss());
+        });
+    });
 }
 
 function testWMCache_get(test, pass, miss) {
