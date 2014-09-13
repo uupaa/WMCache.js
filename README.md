@@ -7,6 +7,7 @@ Client side temporary storage to boost performance.
 ## Document
 
 - [WMCache.js wiki](https://github.com/uupaa/WMCache.js/wiki/WMCache)
+    - [DEMO](http://uupaa.github.io/Examples/demo/WMCache.js/test/index.html)
 - [WebModule](https://github.com/uupaa/WebModule)
     - [Slide](http://uupaa.github.io/Slide/slide/WebModule/index.html)
     - [Development](https://github.com/uupaa/WebModule/wiki/Development)
