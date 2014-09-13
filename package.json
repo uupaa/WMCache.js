@@ -1,6 +1,6 @@
 {
   "name":           "uupaa.wmcache.js",
-  "version":        "0.0.3",
+  "version":        "0.0.4",
   "description":    "The temporary storage of web assets to boost performance.",
   "url":            "https://github.com/uupaa/WMCache.js",
   "keywords":       ["temporary", "storage", "client", "cache", "FileSystem", "IndexedDB", "WebModule", "uupaa", "Unstable"],
