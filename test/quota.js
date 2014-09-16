@@ -6,6 +6,7 @@ var URL = global["URL"] || global["webkitURL"];
 var _runOnNode = "process" in global;
 var _runOnWorker = "WorkerLocation" in global;
 var _runOnBrowser = "document" in global;
+var start = 0, end = 0;
 
 
 global.cache = null;
@@ -25,7 +26,7 @@ var test = new Test("WMCacheQuota", {
 test.run().clone();
 
 var ASSETS_DIR = "../node_modules/uupaa.wmcachetest.js/assets/";
-var unit8Array = new Uint8Array(1024 * 1024 * 10); // 10MB
+var unit8Array = new Uint8Array(1024 * 1024 * 5); // 5MB
 
 function cacheError(err) {
     if (err instanceof ProgressEvent) {
@@ -45,31 +46,38 @@ function testWMCache_setup(test, pass, miss) {
 }
 
 function testWMCache_quota(test, pass, miss) {
-    var index = 0, end = 200;
+    add(200);
 
     setTimeout(_tick, 100);
+}
 
-    function _tick() {
-        if (++index < end) {
-          // Chrome では書き込みが早過ぎると、
-          // 50個Queueにたまった段階で書き込みが連続で失敗するようになる
-          //setTimeout(_tick, 100)
-          //
-          // File I/O よりも FileSystem API の write 要求が多すぎる(早すぎる)と、
-          // QuotaExceededError 以外の理由でも失敗する
-          // 以下のようにゆっくり目にすることで成功率が上がる
-            if (index % 32 === 0) {
-                setTimeout(_tick, 2000)
-            } else {
-                setTimeout(_tick, 200)
-            }
+global.add = add;
+function add(times) {
+    end = start + times;
+
+    setTimeout(_tick, 100);
+}
+
+function _tick() {
+    if (++start < end) {
+      // Chrome では書き込みが早過ぎると、
+      // 50個Queueにたまった段階で書き込みが連続で失敗するようになる
+      //setTimeout(_tick, 100)
+      //
+      // File I/O よりも FileSystem API の write 要求が多すぎる(早すぎる)と、
+      // QuotaExceededError 以外の理由でも失敗する
+      // 以下のようにゆっくり目にすることで成功率が上がる
+        if (start % 32 === 0) {
+            setTimeout(_tick, 2000)
         } else {
-            console.log("done");
-            cache.quota();
-            console.dir(cache.list());
+            setTimeout(_tick, 200)
         }
-        _store(index + ".png");
+    } else {
+        console.log("done");
+        cache.quota();
+        console.dir(cache.list());
     }
+    _store(start + ".png");
 }
 
 function _store(url) {
