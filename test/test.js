@@ -15,15 +15,17 @@ var test = new Test("WMCache", {
         browser:    true,
         worker:     false,
         node:       false,
-        button:     true,
+        button:     false,
         both:       false, // test the primary module and secondary module
     }).add([
         testWMCache_setup,
-//      testWMCache_clear,
         testWMCache_reget,
-//      testWMCache_store,
+        testWMCache_storeDotfile,
+        testWMCache_getAndStore,
         testWMCache_get,
         testWMCache_getArrayBuffer,
+        testWMCache_gcButSurviveDotFiles,
+        testWMCache_clear,
     ]);
 
 test.run().clone();
@@ -38,29 +40,58 @@ function cacheError(err) {
     }
 }
 
+function testWMCache_gcButSurviveDotFiles(test, pass, miss) {
+    var cache = global.cache;
+
+    cache.gc();
+
+    var times = 5;
+
+    function _watch() {
+        console.log("..wait");
+        var list = cache.list();
+        var ok = true;
+
+        for (var url in list) {
+            console.log(url);
+            if (url[0] !== ".") {
+                ok = false;
+                break;
+            }
+        }
+        if (ok) {
+console.log("pass");
+            test.done(pass());
+        } else {
+            if (--times <= 0) {
+console.log("miss");
+                test.done(miss());
+            } else {
+                setTimeout(_watch, 1000);
+            }
+        }
+    }
+    setTimeout(_watch, 1000);
+}
+
+function testWMCache_clear(test, pass, miss) {
+    var cache = global.cache;
+
+    cache.clear(function() {
+        if (Object.keys(cache.list()).length === 0) {
+            test.done(pass());
+        } else {
+            test.done(miss());
+        }
+    });
+}
+
 function testWMCache_setup(test, pass, miss) {
     new WMCache({}, function(cache) { // export global.cache
         global.cache = cache;
         test.done(pass());
     }, cacheError);
     document.body.innerHTML += '<p><input type="button" value="cache.clear()" onclick="cache.clear()"></input></p>';
-}
-
-
-function testWMCache_clear(test, pass, miss) {
-    var cache = global.cache;
-
-    if ( Object.keys(cache.list()).length > 0) {
-        cache.clear(function() {
-            if (Object.keys(cache.list()).length === 0) {
-                test.done(pass());
-            } else {
-                test.done(miss());
-            }
-        });
-    } else {
-        test.done(miss());
-    }
 }
 
 function testWMCache_reget(test, pass, miss) {
@@ -93,19 +124,19 @@ function testWMCache_reget(test, pass, miss) {
     });
 }
 
-function testWMCache_store(test, pass, miss) {
+function testWMCache_storeDotfile(test, pass, miss) {
     var cache = global.cache;
     var dataSource = [0,1,2,3,4,5,6,7];
     var data = new Uint8Array(dataSource);
 
-    cache.store("a.png", data.buffer, "", data.buffer.byteLength, function() {
-        cache.getArrayBuffer("a.png", function(url, data, mime, size, cached) {
+    cache.store(".dotfile", data.buffer, "", data.buffer.byteLength, function() {
+        cache.getArrayBuffer(".dotfile", function(url, data, mime, size, cached) {
             var buffer = new Uint8Array(data);
 
             if (cached && dataSource.length === size) {
                 if ([].slice.call(buffer).join() === dataSource.join()) {
                     test.done(pass());
-                    cache.drop("a.png");
+                    cache.drop(".dotfile");
                     return;
                 }
             }
@@ -115,7 +146,7 @@ function testWMCache_store(test, pass, miss) {
 }
 
 function testWMCache_get(test, pass, miss) {
-    var fileList1 = [
+    var images = [
             ASSETS_DIR + "1.png",
             ASSETS_DIR + "2.png",
             ASSETS_DIR + "3.png",
@@ -126,7 +157,7 @@ function testWMCache_get(test, pass, miss) {
             ASSETS_DIR + "8.png",
         ];
 
-    var task = new Task(fileList1.length + 1, function(err, buffer) {
+    var task = new Task(images.length + 1, function(err, buffer) {
             if (err) {
                 test.done(miss());
             } else {
@@ -138,20 +169,67 @@ function testWMCache_get(test, pass, miss) {
 
     var imageNodes = [];
 
-    cacheReady(global.cache);
+    images.forEach(function(url) {
+        cache.getBlobURL(url, function(url, blobURL, mime, size) {
+            var img = new Image();
+            img.src = blobURL;
+            imageNodes.push( document.body.appendChild(img) );
+            task.pass();
+        }, { wait: true });
+    });
 
-    function cacheReady(cache) {
-        fileList1.forEach(function(url) {
-            cache.getBlobURL(url, function(url, blobURL, mime, size) {
-                if (mime === "image/png") {
+    // tear down
+    setTimeout(function() {
+        imageNodes.forEach(function(node) {
+            document.body.removeChild(node);
+        });
+        task.pass();
+    }, 2000);
+}
+
+function testWMCache_getAndStore(test, pass, miss) {
+    var images = [
+            ASSETS_DIR + "1.png",
+            ASSETS_DIR + "2.png",
+            ASSETS_DIR + "3.png",
+            ASSETS_DIR + "4.png",
+            ASSETS_DIR + "5.png",
+            ASSETS_DIR + "6.png",
+            ASSETS_DIR + "7.png",
+            ASSETS_DIR + "8.png",
+        ];
+
+    var task = new Task(images.length + 1, function(err, buffer) {
+            if (err) {
+                test.done(miss());
+            } else {
+                setTimeout(function() {
+                    test.done(pass());
+                }, 2000);
+            }
+        });
+
+    var imageNodes = [];
+
+    images.forEach(function(url) {
+        cache.getBlob(url, function(url, blob, mime, size) {
+            var dotfile = "." + WMURL.parse(url).file;
+
+            cache.store(dotfile, blob, mime, size, function(url, code, stored) {
+                cache.getBlobURL(url, function(url, blobURL, mime, size) {
                     var img = new Image();
                     img.src = blobURL;
                     imageNodes.push( document.body.appendChild(img) );
-                }
-                task.pass();
-            }, { wait: true });
-        });
-    }
+                    if (url[0] === ".") {
+                        task.pass();
+                    } else {
+                        task.miss();
+                    }
+                });
+            });
+        }, { wait: true });
+    });
+
     // tear down
     setTimeout(function() {
         imageNodes.forEach(function(node) {

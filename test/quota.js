@@ -79,7 +79,7 @@ function _tick() {
         cache.quota();
         console.dir(cache.list());
     }
-    _store(start + ".png");
+    _store("." + start + ".png");
 }
 
 function _store(url) {
