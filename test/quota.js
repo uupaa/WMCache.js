@@ -29,11 +29,13 @@ var ASSETS_DIR = "../node_modules/uupaa.wmcachetest.js/assets/";
 var unit8Array = new Uint8Array(1024 * 1024 * 5); // 5MB
 
 function cacheError(err) {
-    if (err instanceof ProgressEvent) {
-        console.error( err.target.error.message );
-    } else {
 debugger;
-        console.error( err.message );
+    if (err instanceof ProgressEvent && err.target.error) {
+        console.error( err.target.error.name || err.target.error.message );
+    } else if (err) {
+        console.error( err.name || err.message );
+    } else {
+        console.error("UnknownError");
     }
 }
 
@@ -83,7 +85,7 @@ function _tick() {
 function _store(url) {
     var cache = global.cache;
 
-    cache.store(url, unit8Array.buffer, "image/png", unit8Array.buffer.byteLength, function(url, stored, code) {
+    cache.store(url, unit8Array.buffer, "image/png", unit8Array.buffer.byteLength, function(url, code, stored) {
         switch (code) {
         case 200: console.log(url + " ok");
                   break;
