@@ -19,6 +19,7 @@ var test = new Test("WMCache", {
         both:       false, // test the primary module and secondary module
     }).add([
         testWMCache_setup,
+        testWMCache_getWebFont,
         testWMCache_reget,
         testWMCache_storeDotfile,
         testWMCache_getAndStore,
@@ -93,6 +94,59 @@ function testWMCache_setup(test, pass, miss) {
     }, cacheError);
     document.body.innerHTML += '<p><input type="button" value="cache.clear()" onclick="cache.clear()"></input></p>';
 }
+
+function _multiline(fn) { // @arg Function:
+                          // @ret String:
+    return (fn + "").split("\n").slice(1, -1).join("\n");
+}
+
+function testWMCache_getWebFont(test, pass, miss) {
+    var cache = global.cache;
+    var url = ASSETS_DIR + "NotoSansCJKjp-Regular.otf";
+
+    cache.getBlobURL(url, function(url, blobURL, mime, size, cached) {
+        addTextUsingWebFont();
+        addStyleNode(blobURL);
+
+        var clearButtonNode = document.querySelector(".hello-world");
+        var cs = global.getComputedStyle(clearButtonNode);
+
+        if (cs.fontFamily === "Noto") {
+            test.done(pass());
+        } else {
+            test.done(miss());
+        }
+    });
+}
+
+function addStyleNode(blobURL) {
+    var css = _multiline(function() {/*
+
+@font-face {
+    font-family: "Noto";
+    src: url("BLOB_URL");
+}
+p.hello-world {
+    font-family: "Noto";
+}
+
+*/}).replace(/BLOB_URL/g, blobURL);
+
+    var style = document.createElement("style");
+    style.setAttribute("type", "text/css");
+    style.innerHTML = css;
+    document.head.appendChild(style);
+}
+
+function addTextUsingWebFont() {
+    document.body.innerHTML += _multiline(function() {/*
+<p class="hello-world">
+こんにちは日本におけるWebFontの世界。<br />
+私は今、WMCache.js でローカルにキャッシュされた<br />16.4MBのWebFont(Noto)を使い、貴方の心に直接語りかけています。
+</p>
+*/});
+}
+
 
 function testWMCache_reget(test, pass, miss) {
     var cache = global.cache;
