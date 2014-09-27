@@ -24,6 +24,7 @@ var test = new Test("WMCache", {
         testWMCache_storeDotfile,
         testWMCache_getAndStore,
         testWMCache_get,
+        testWMCache_size,
         testWMCache_getArrayBuffer,
         testWMCache_gcButSurviveDotFiles,
         testWMCache_clear,
@@ -75,6 +76,16 @@ console.log("miss");
     setTimeout(_watch, 1000);
 }
 
+function testWMCache_size(test, pass, miss) {
+    var cache = global.cache;
+
+    if (cache.size() >= 0) {
+        test.done(pass());
+    } else {
+        test.done(miss());
+    }
+}
+
 function testWMCache_clear(test, pass, miss) {
     var cache = global.cache;
 
@@ -108,10 +119,10 @@ function testWMCache_getWebFont(test, pass, miss) {
         addTextUsingWebFont();
         addStyleNode(blobURL);
 
-        var clearButtonNode = document.querySelector(".hello-world");
-        var cs = global.getComputedStyle(clearButtonNode);
+        var message = document.querySelector(".message");
+        var computedStyle = global.getComputedStyle(message);
 
-        if (cs.fontFamily === "Noto") {
+        if (computedStyle.fontFamily === "Noto") {
             test.done(pass());
         } else {
             test.done(miss());
@@ -126,7 +137,7 @@ function addStyleNode(blobURL) {
     font-family: "Noto";
     src: url("BLOB_URL");
 }
-p.hello-world {
+p.message {
     font-family: "Noto";
 }
 
@@ -140,7 +151,7 @@ p.hello-world {
 
 function addTextUsingWebFont() {
     document.body.innerHTML += _multiline(function() {/*
-<p class="hello-world">
+<p class="message">
 こんにちは日本におけるWebFontの世界。<br />
 私は今、WMCache.js でローカルにキャッシュされた<br />16.4MBのWebFont(Noto)を使い、貴方の心に直接語りかけています。
 </p>
