@@ -1,6 +1,5 @@
 var ModuleTestWMCache = (function(global) {
 
-var Task = global["Task"];
 var URL = global["URL"] || global["webkitURL"];
 
 var _runOnNode = "process" in global;
@@ -222,7 +221,7 @@ function testWMCache_get(test, pass, miss) {
             ASSETS_DIR + "8.png",
         ];
 
-    var task = new Task(images.length + 1, function(err, buffer) {
+    var task = new TestTask(images.length + 1, function(err, buffer) {
             if (err) {
                 test.done(miss());
             } else {
@@ -264,7 +263,7 @@ function testWMCache_getAndStore(test, pass, miss) {
             ASSETS_DIR + "8.png",
         ];
 
-    var task = new Task(images.length + 1, function(err, buffer) {
+    var task = new TestTask(images.length + 1, function(err, buffer) {
             if (err) {
                 test.done(miss());
             } else {
@@ -305,7 +304,7 @@ function testWMCache_getAndStore(test, pass, miss) {
 }
 
 function testWMCache_getArrayBuffer(test, pass, miss) {
-    var task = new Task(4, function(err, buffer) {
+    var task = new TestTask(4, function(err, buffer) {
 
             var node = document.querySelector("#a");
             node.parentNode.removeChild(node);

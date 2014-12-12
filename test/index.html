@@ -2,14 +2,48 @@
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <meta charset="utf-8"></head><body>
 
-<script src="../node_modules/uupaa.reflection.js/lib/Reflection.js"></script>
-<script src="../node_modules/uupaa.console.js/lib/Console.js"></script>
-<script src="../node_modules/uupaa.help.js/lib/Help.js"></script>
-<script src="../node_modules/uupaa.valid.js/lib/Valid.js"></script>
-<script src="../node_modules/uupaa.task.js/lib/Task.js"></script>
-<script src="../node_modules/uupaa.test.js/lib/Test.js"></script>
+<script id="worker" type="javascript/worker">
+onmessage = function(event) {
+
+    if (!self.console) {
+        self.console = function() {};
+        self.console.log = function() {};
+        self.console.warn = function() {};
+        self.console.error = function() {};
+    }
+
+    self.MESSAGE = event.data;
+
+    importScripts(MESSAGE.BASE_DIR + "../node_modules/uupaa.wmmimetype.js/lib/WMMimeType.js");
+    importScripts(MESSAGE.BASE_DIR + "../node_modules/uupaa.wmurl.js/lib/WMURL.js");
+    importScripts(MESSAGE.BASE_DIR + "../node_modules/uupaa.task.js/lib/Task.js");
+    importScripts(MESSAGE.BASE_DIR + "../../WebModule/lib/Console.js");
+    importScripts(MESSAGE.BASE_DIR + "../../WebModule/lib/Help.js");
+    importScripts(MESSAGE.BASE_DIR + "../../WebModule/lib/Valid.js");
+    importScripts(MESSAGE.BASE_DIR + "../../WebModule/lib/TestTask.js");
+    importScripts(MESSAGE.BASE_DIR + "../../WebModule/lib/Test.js");
+    importScripts(MESSAGE.BASE_DIR + "../lib/WMCacheControl.js");
+    importScripts(MESSAGE.BASE_DIR + "../lib/WMCacheProfile.js");
+    importScripts(MESSAGE.BASE_DIR + "../lib/WMBlackholeStorage.js");
+    importScripts(MESSAGE.BASE_DIR + "../lib/WMIndexedDBStorage.js");
+    importScripts(MESSAGE.BASE_DIR + "../lib/WMFileSystemStorage.js");
+    importScripts(MESSAGE.BASE_DIR + "../lib/WMCache.js");
+    importScripts(MESSAGE.BASE_DIR + "../release/WMCache.min.js");
+    importScripts(MESSAGE.BASE_DIR + "./testcase.js");
+
+    self.postMessage({ error: self.errorMessage || "" });
+};
+</script>
+
 <script src="../node_modules/uupaa.wmcachetest.js/assets/audio.js"></script>
+<script src="../node_modules/uupaa.wmmimetype.js/lib/WMMimeType.js"></script>
 <script src="../node_modules/uupaa.wmurl.js/lib/WMURL.js"></script>
+<script src="../node_modules/uupaa.task.js/lib/Task.js"></script>
+<script src="../../WebModule/lib/Console.js"></script>
+<script src="../../WebModule/lib/Help.js"></script>
+<script src="../../WebModule/lib/Valid.js"></script>
+<script src="../../WebModule/lib/TestTask.js"></script>
+<script src="../../WebModule/lib/Test.js"></script>
 <script src="../lib/WMCacheControl.js"></script>
 <script src="../lib/WMCacheProfile.js"></script>
 <script src="../lib/WMBlackholeStorage.js"></script>
@@ -17,6 +51,6 @@
 <script src="../lib/WMFileSystemStorage.js"></script>
 <script src="../lib/WMCache.js"></script>
 <script src="../release/WMCache.min.js"></script>
-<script src="./test.js?=_1410511763615"></script>
+<script src="./testcase.js"></script>
 
 </body></html>
